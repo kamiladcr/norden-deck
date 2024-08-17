@@ -96,4 +96,10 @@ def deckgl():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, use_reloader=True, debug=True)
+    html = r.to_html(
+        notebook_display=True,
+        iframe_height=1000,
+    )
+
+    with open("index.html", "w") as h:
+        h.write(getattr(html, "data"))
