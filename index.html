@@ -108,7 +108,7 @@
          controller: true,
        }),
      ],
-     layers: [polygon_layer],
+     layers: [],
      widgets: [
        new CompassWidget({
          id: "compass",
@@ -158,7 +158,7 @@
      });
      
      deckgl.setProps({
-       layers: [column_layer]
+       layers: [polygon_layer, column_layer]
      });
    };
 
