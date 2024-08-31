@@ -1,37 +1,43 @@
 from flask import Flask
 import pandas as pd
 import geopandas as gpd
-import plotly.express as px
 import pydeck as pdk
 from shapely import wkb
+import ast
+
+# MUNICIPAL BORDERS LAYER
+with open("data/nordic_polygons_flat.txt", "r") as file:
+    content = file.read()
+
+borders = ast.literal_eval(content.split("= ")[1])
+
+polygon_layer = pdk.Layer(
+    "PolygonLayer",
+    borders,
+    opacity=0.8,
+    stroked=True,
+    get_polygon="-",
+    filled=False,
+    get_line_color=[211, 211, 211, 255],
+    pickable=False,
+    line_width_min_pixels=1,
+)
 
 
-DATA = "data/nordic_points.geoparquet"  # nordic grid
-
+# POPULATION GRID LAYER
+DATA = "data/nordic_points.geoparquet"
 df = pd.read_parquet(DATA)
 df["geometry"] = df["geometry"].apply(wkb.loads)
 df = gpd.GeoDataFrame(df, geometry="geometry")
 df["lng"] = df["geometry"].x
 df["lat"] = df["geometry"].y
-df = df[
-    [
-        "lat",
-        "lng",
-        "population2017",
-        "population2022",
-        "municipality_name",
-        "population_total",
-    ]
-]
-df["population"] = df["population2022"]
-df = df[df["population"] != 0].sort_values("population", ascending=False)
+
 df = df[
     [
         "lat",
         "lng",
         "population",
-        "municipality_name",
-        # "population_total",
+        "munname",
     ]
 ]
 
@@ -61,7 +67,8 @@ def assign_color(population):
 
 df["fill_color"] = df["population"].apply(assign_color)
 
-layer = pdk.Layer(
+
+column_layer = pdk.Layer(
     "ColumnLayer",
     df,
     get_position=["lng", "lat"],
@@ -76,8 +83,9 @@ layer = pdk.Layer(
     coverage=1,
 )
 
+# HOVER DATA
 tooltip = {
-    "html": "{population} <br><b>{municipality_name}</b>",
+    "html": "{population} <br><b>{munname}</b>",
     "style": {
         "background": "white",
         "color": "black",
@@ -86,6 +94,7 @@ tooltip = {
     },
 }
 
+# INITIAL VIEW
 view_state = pdk.ViewState(
     longitude=10.7,
     latitude=59.9,
@@ -96,37 +105,33 @@ view_state = pdk.ViewState(
     bearing=0,
 )
 
-
-# render
+# RENDER
 r = pdk.Deck(
-    layers=[layer],
+    layers=[polygon_layer, column_layer],
     initial_view_state=view_state,
     tooltip=tooltip,
     map_style=pdk.map_styles.LIGHT,
 )
 
-
 app = Flask(__name__)
+
+html = r.to_html(
+    notebook_display=False,
+    as_string=True,
+    offline=False,
+)
 
 
 @app.route("/")
 def deckgl():
-    html = r.to_html(
-        notebook_display=True,
-        iframe_height=1000,
-    )
-    return getattr(html, "data", "")
+    html_str = str(html)
+    with open("index.html", "w") as h:
+        h.write(html_str)
+    return html_str
 
 
 if __name__ == "__main__":
-    html = r.to_html(
-        notebook_display=False,
-        as_string=True,
-        offline=True,
-    )
-
-    with open("index.html", "w") as h:
-        h.write(html)
+    pass
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, use_reloader=True, debug=True)
