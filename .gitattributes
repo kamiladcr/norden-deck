@@ -6,3 +6,5 @@ data/nordic_points_1km.parquet filter=lfs diff=lfs merge=lfs -text
 data/nordic_polygons.parquet filter=lfs diff=lfs merge=lfs -text
 data/nordic_polygons_flat.txt filter=lfs diff=lfs merge=lfs -text
 data/nord_mun22_lcc filter=lfs diff=lfs merge=lfs -text
+layers/column_layer.json filter=lfs diff=lfs merge=lfs -text
+layers/polygon_layer.json filter=lfs diff=lfs merge=lfs -text

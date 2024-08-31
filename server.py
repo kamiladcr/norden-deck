@@ -1,28 +1,16 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 import pandas as pd
 import geopandas as gpd
 import pydeck as pdk
 from shapely import wkb
 import ast
+import json
 
 # MUNICIPAL BORDERS LAYER
 with open("data/nordic_polygons_flat.txt", "r") as file:
     content = file.read()
 
 borders = ast.literal_eval(content.split("= ")[1])
-
-polygon_layer = pdk.Layer(
-    "PolygonLayer",
-    borders,
-    opacity=0.8,
-    stroked=True,
-    get_polygon="-",
-    filled=False,
-    get_line_color=[211, 211, 211, 255],
-    pickable=False,
-    line_width_min_pixels=1,
-)
-
 
 # POPULATION GRID LAYER
 DATA = "data/nordic_points.geoparquet"
@@ -40,7 +28,6 @@ df = df[
         "munname",
     ]
 ]
-
 
 def assign_color(population):
     if population < 5:
@@ -67,22 +54,6 @@ def assign_color(population):
 
 df["fill_color"] = df["population"].apply(assign_color)
 
-
-column_layer = pdk.Layer(
-    "ColumnLayer",
-    df,
-    get_position=["lng", "lat"],
-    get_fill_color="fill_color",
-    get_elevation="population",
-    get_elevation_weight="population",
-    auto_highlight=True,
-    radius=500,
-    elevation_scale=6,
-    pickable=True,
-    extruded=True,
-    coverage=1,
-)
-
 # HOVER DATA
 tooltip = {
     "html": "{population} <br><b>{munname}</b>",
@@ -94,44 +65,31 @@ tooltip = {
     },
 }
 
-# INITIAL VIEW
-view_state = pdk.ViewState(
-    longitude=10.7,
-    latitude=59.9,
-    zoom=6,
-    min_zoom=4,
-    max_zoom=15,
-    pitch=50.5,
-    bearing=0,
-)
-
-# RENDER
-r = pdk.Deck(
-    layers=[polygon_layer, column_layer],
-    initial_view_state=view_state,
-    tooltip=tooltip,
-    map_style=pdk.map_styles.LIGHT,
-)
-
 app = Flask(__name__)
 
-html = r.to_html(
-    notebook_display=False,
-    as_string=True,
-    offline=False,
-)
+@app.route("/save")
+def save():
+    with open("layers/polygon_layer.json", "w") as h:
+        h.write(json.dumps(borders))
 
+    with open("layers/column_layer.json", "w") as h:
+        h.write(df.to_json(orient="records"))
+
+    return "done"
+
+    # index.html was generated with pydeck before
+
+    # with open("index.html", "w") as h:
+    #     h.write(html)
+
+@app.route("/layers/<path:name>")
+def serve_layers(name):
+    return send_from_directory("layers", name)
 
 @app.route("/")
-def deckgl():
-    html_str = str(html)
-    with open("index.html", "w") as h:
-        h.write(html_str)
-    return html_str
-
-
-if __name__ == "__main__":
-    pass
+def index():
+    with open("index.html", "r") as h:
+        return h.read()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, use_reloader=True, debug=True)
