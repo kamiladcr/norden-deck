@@ -13,8 +13,15 @@
       href="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.css"
       rel="stylesheet"
     />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+
+     .range {
+       --range-shdw: oklch(0.51 0.08 278.8);
+     }
+     
      body {
        width: 100vw;
        height: 100vh;
@@ -45,13 +52,14 @@
        padding: 20px;
        z-index: 1;
      }
+     
     </style>
   </head>
   
-  <div id="control-panel">
+  <div id="control-panel" class="rounded-lg shadow-lg">
     <div>
       <label onclick="defaults()">Elevation scale</label>
-      <input id="elevationScale" type="range" min="1" max="40" step="1" value="6"></input>
+      <input id="elevationScale" type="range" min="1" max="40" step="1" value="6" class="range range-xs"></input>
     </div>
   </div>
 
