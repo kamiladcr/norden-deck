@@ -1,7 +1,6 @@
 from flask import Flask, send_from_directory
 import pandas as pd
 import geopandas as gpd
-import pydeck as pdk
 from shapely import wkb
 import ast
 import json
@@ -53,17 +52,6 @@ def assign_color(population):
 
 
 df["fill_color"] = df["population"].apply(assign_color)
-
-# HOVER DATA
-tooltip = {
-    "html": "{population} <br><b>{munname}</b>",
-    "style": {
-        "background": "white",
-        "color": "black",
-        "font-family": '"Helvetica Neue", Arial',
-        "font-size": "10px",
-    },
-}
 
 app = Flask(__name__)
 
