@@ -15,118 +15,157 @@
     />
 
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
+     body {
+       width: 100vw;
+       height: 100vh;
+       margin: 0;
+     }
 
-      #deck-container {
-        width: 100vw;
-        height: 100vh;
-      }
+     #deck-container {
+       width: 100vw;
+       height: 100vh;
+     }
 
-      #deck-container canvas {
-        z-index: 1;
-        background: none;
-      }
+     #deck-container canvas {
+       z-index: 1;
+       background: none;
+     }
 
-      .deck-widget {
-        --button-size: 48px;
-      }
+     .deck-widget {
+       --button-size: 48px;
+     }
+
+     #control-panel {
+       font-family: Helvetica, Arial, sans-serif;
+       position: absolute;
+       background: #fff;
+       bottom: 0;
+       left: 0;
+       margin: 12px;
+       padding: 20px;
+       z-index: 1;
+     }
     </style>
   </head>
-
-  <body>
-    <div id="deck-container"></div>
-  </body>
+  
+  <div id="control-panel">
+    <div>
+      <label onclick="defaults()">Elevation scale</label>
+      <input id="elevationScale" type="range" min="1" max="40" step="1" value="6"></input>
+    </div>
+  </div>
 
   <script>
-    const {
-      DeckGL,
-      MapView,
-      ColumnLayer,
-      PolygonLayer,
-      CompassWidget,
-      ZoomWidget,
-      FullscreenWidget,
-    } = deck;
+   const {
+     DeckGL,
+     MapView,
+     ColumnLayer,
+     PolygonLayer,
+     CompassWidget,
+     ZoomWidget,
+     FullscreenWidget,
+   } = deck;
 
-    const polygon_layer = new PolygonLayer({
-      id: "PolygonLayer",
-      data: "layers/polygon_layer.json",
-      pickable: false,
-      getPolygon: (d) => d,
-      filled: false,
-      getLineColor: [211, 211, 211, 255],
-      lineWidthMinPixels: 1,
-    });
+   const polygon_layer = new PolygonLayer({
+     id: "PolygonLayer",
+     data: "layers/polygon_layer.json",
+     pickable: false,
+     getPolygon: (d) => d,
+     filled: false,
+     getLineColor: [211, 211, 211, 255],
+     lineWidthMinPixels: 1,
+   });
 
-    const column_layer = new ColumnLayer({
-      id: "ColumnLayer",
-      data: "layers/column_layer.json",
-      extruded: true,
-      radius: 500,
-      elevationScale: 6,
-      pickable: true,
-      autoHighlight: true,
-      getPosition: (d) => [d.lng, d.lat],
-      getElevation: (d) => d.population,
-      getElevationWeight: (d) => d.population,
-      getFillColor: (d) => d.fill_color,
-      highlightColor: [130, 40, 50, 255],
-    });
+   function getTooltip({ object }) {
+     return (
+       object && {
+         html: `${object.population} <br><b>${object.munname}</b>`,
+         style: {
+           background: "white",
+           color: "black",
+           "font-family": '"Helvetica Neue", Arial',
+           "font-size": "10px",
+         },
+       }
+     );
+   }
 
-    function getTooltip({ object }) {
-      return (
-        object && {
-          html: `${object.population} <br><b>${object.munname}</b>`,
-          style: {
-            background: "white",
-            color: "black",
-            "font-family": '"Helvetica Neue", Arial',
-            "font-size": "10px",
-          },
-        }
-      );
-    }
+   const deckgl = new DeckGL({
+     map: maplibregl,
+     mapStyle: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+     initialViewState: {
+       bearing: 0,
+       latitude: 59.9,
+       longitude: 10.7,
+       maxZoom: 15,
+       minZoom: 4,
+       pitch: 50.5,
+       zoom: 6,
+     },
+     views: [
+       new MapView({
+         id: "map",
+         controller: true,
+       }),
+     ],
+     layers: [polygon_layer],
+     widgets: [
+       new CompassWidget({
+         id: "compass",
+         viewId: "map",
+       }),
+       new ZoomWidget({
+         id: "zoom",
+         viewId: "map",
+       }),
+       new FullscreenWidget({
+         id: "fullscreen",
+         viewId: "map",
+         placement: "top-right",
+       }),
+     ],
+     getTooltip,
+   });
 
-    const deckgl = new DeckGL({
-      container: "deck-container",
-      map: maplibregl,
-      mapStyle: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-      initialViewState: {
-        bearing: 0,
-        latitude: 59.9,
-        longitude: 10.7,
-        maxZoom: 15,
-        minZoom: 4,
-        pitch: 50.5,
-        zoom: 6,
-      },
-      views: [
-        new MapView({
-          id: "map",
-          controller: true,
-        }),
-      ],
-      layers: [polygon_layer, column_layer],
-      widgets: [
-        new CompassWidget({
-          id: "compass",
-          viewId: "map",
-        }),
-        new ZoomWidget({
-          id: "zoom",
-          viewId: "map",
-        }),
-        new FullscreenWidget({
-          id: "fullscreen",
-          viewId: "map",
-          placement: "top-right",
-        }),
-      ],
-      getTooltip,
-    });
+   const OPTIONS = ['elevationScale'];
+
+   OPTIONS.forEach(key => {
+     document.getElementById(key).oninput = renderLayer;
+   });
+
+   renderLayer();
+
+   function renderLayer () {
+     const options = {};
+     OPTIONS.forEach(key => {
+       const value = +document.getElementById(key).value;
+       options[key] = value; 
+     });
+
+     const column_layer = new ColumnLayer({
+       id: "ColumnLayer",
+       data: "layers/column_layer.json",
+       extruded: true,
+       radius: 500,
+       pickable: true,
+       autoHighlight: true,
+       getPosition: (d) => [d.lng, d.lat],
+       getElevation: (d) => d.population,
+       getElevationWeight: (d) => d.population,
+       getFillColor: (d) => d.fill_color,
+       highlightColor: [130, 40, 50, 255],
+       ...options
+     });
+     
+     deckgl.setProps({
+       layers: [column_layer]
+     });
+   };
+
+   function defaults() {
+     document.getElementById('elevationScale').value = 6;
+     renderLayer();
+   };
+   
   </script>
 </html>
