@@ -1,1 +1,8 @@
 index.html filter=lfs diff=lfs merge=lfs -text
+data/nord_mun22_lcc/nord_mun22_lcc.shp filter=lfs diff=lfs merge=lfs -text
+data/nordic_borders.txt filter=lfs diff=lfs merge=lfs -text
+data/nordic_points.geoparquet filter=lfs diff=lfs merge=lfs -text
+data/nordic_points_1km.parquet filter=lfs diff=lfs merge=lfs -text
+data/nordic_polygons.parquet filter=lfs diff=lfs merge=lfs -text
+data/nordic_polygons_flat.txt filter=lfs diff=lfs merge=lfs -text
+data/nord_mun22_lcc filter=lfs diff=lfs merge=lfs -text
