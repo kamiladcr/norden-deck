@@ -42,17 +42,28 @@
        --button-size: 48px;
      }
 
-     #control-panel {
+
+     #control-panel, #text-box {
        font-family: Helvetica, Arial, sans-serif;
        position: absolute;
        background: #fff;
-       bottom: 0;
        left: 0;
        margin: 12px;
        padding: 20px;
        z-index: 1;
+       width: 260px;
      }
-     
+
+     #control-panel {
+       bottom: 50px;
+     }
+
+     #text-box {
+       bottom: 0px;
+       padding: 4px 20px;
+       opacity: 0.5;
+       font-size: 10px;
+     }
     </style>
   </head>
   
@@ -60,6 +71,13 @@
     <div>
       <label onclick="defaults()">Elevation scale</label>
       <input id="elevationScale" type="range" min="1" max="40" step="1" value="6" class="range range-xs"></input>
+    </div>
+  </div>
+
+
+  <div id="text-box" class="rounded-lg shadow-lg">
+    <div>
+      <p>The map is based on 1x1 km population grid data <br>from Nordic Statistical Institutes.</p>
     </div>
   </div>
 
@@ -103,12 +121,12 @@
      mapStyle: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
      initialViewState: {
        bearing: 0,
-       latitude: 59.9,
-       longitude: 10.7,
+       latitude: 61,
+       longitude: 14,
        maxZoom: 15,
        minZoom: 4,
-       pitch: 50.5,
-       zoom: 6,
+       pitch: 80,
+       zoom: 5,
      },
      views: [
        new MapView({
