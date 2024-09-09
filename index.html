@@ -15,9 +15,8 @@
     />
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <style>
-
      .range {
        --range-shdw: oklch(0.51 0.08 278.8);
      }
@@ -42,7 +41,6 @@
        --button-size: 48px;
      }
 
-
      #control-panel, #text-box {
        font-family: Helvetica, Arial, sans-serif;
        position: absolute;
@@ -51,11 +49,12 @@
        margin: 12px;
        padding: 20px;
        z-index: 1;
-       width: 260px;
      }
 
      #control-panel {
-       bottom: 50px;
+       bottom: 60px;
+       width: 260px;
+
      }
 
      #text-box {
@@ -63,24 +62,29 @@
        padding: 4px 20px;
        opacity: 0.5;
        font-size: 10px;
+       width: 440px;
+
      }
     </style>
   </head>
   
-  <div id="control-panel" class="rounded-lg shadow-lg">
+  <div id="control-panel" class="rounded-lg shadow-md">
     <div>
       <label onclick="defaults()">Elevation scale</label>
       <input id="elevationScale" type="range" min="1" max="40" step="1" value="6" class="range range-xs"></input>
     </div>
   </div>
 
-
-  <div id="text-box" class="rounded-lg shadow-lg">
+  <div id="text-box" class="rounded-lg shadow-md">
     <div>
-      <p>The map is based on 1x1 km population grid data <br>from Nordic Statistical Institutes.</p>
+      <p>
+        Hold <kbd class="kbd kbd-xs">CNTR</kbd> to rotate the map. <br>
+        The map is based on 1x1 km population grid data from Nordic Statistical Institutes. <br>
+        Denmark, Finland, Norway, Sweden data is from 2022; Iceland's is from 2017.
+      </p>
     </div>
   </div>
-
+  
   <script>
    const {
      DeckGL,
