@@ -42,7 +42,7 @@
      }
 
      #control-panel, #text-box {
-       font-family: Helvetica, Arial, sans-serif;
+       font-family: Corbel, Helvetica, Arial;
        position: absolute;
        background: #fff;
        left: 0;
@@ -52,38 +52,58 @@
      }
 
      #control-panel {
-       bottom: 60px;
+       bottom: 220px;
        width: 260px;
+       opacity: 0.8;
 
      }
 
      #text-box {
        bottom: 0px;
        padding: 4px 20px;
-       opacity: 0.5;
-       font-size: 10px;
-       width: 440px;
-
+       opacity: 0.8;
+       font-size: 16px;
+       width: 600px;
      }
-    </style>
-  </head>
-  
-  <div id="control-panel" class="rounded-lg shadow-md">
-    <div>
-      <label onclick="defaults()">Elevation scale</label>
-      <input id="elevationScale" type="range" min="1" max="40" step="1" value="6" class="range range-xs"></input>
-    </div>
-  </div>
+     
+     body {
+       overflow: hidden;
+       filter: drop-shadow(0 0 10px white);
+     }     
 
-  <div id="text-box" class="rounded-lg shadow-md">
-    <div>
-      <p>
-        Hold <kbd class="kbd kbd-xs">CNTR</kbd> to rotate the map. <br>
-        The map is based on 1x1 km population grid data from Nordic Statistical Institutes. <br>
-        Denmark, Finland, Norway, Sweden data is from 2022; Iceland's is from 2017.
-      </p>
+    </style>
+  </head>  
+
+  <body>
+    
+    <div id="control-panel" class="rounded-lg shadow-md">
+      <div>
+        <label onclick="defaults()">Tune elevation scale</label>
+        <input id="elevationScale" type="range" min="1" max="40" step="1" value="6" class="range range-xs"></input>
+      </div>
     </div>
-  </div>
+
+    <div id="text-box" class="rounded-lg shadow-md">
+      <div>
+        <p style="font-weight: bold;">Population in the Nordic region</p>
+        <br>
+        <p> 
+          Hold <kbd class="kbd kbd-xs">CNTR</kbd> or <kbd class="kbd kbd-xs">SHIFT</kbd> to rotate the map. <br>
+        </p>
+        <br>
+        <p> 
+          The map is based on 1x1 km population grid data from Nordic Statistical Institutes. <br>
+          Data for Denmark, Finland, Norway, Sweden is for 2022; Iceland's is for 2017. <br>
+        </p>
+        <br>
+        <p> <a href="https://nordregio.org/" class="inline-flex items-center font-medium text-black-600 dark:text-black-500 hover:underline">
+          Visit nordregio.org to learn more about the Nordic region
+          <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+          </svg>
+        </a></p>
+      </div>
+    </div>
   
   <script>
    const {
@@ -195,7 +215,8 @@
    function defaults() {
      document.getElementById('elevationScale').value = 6;
      renderLayer();
-   };
-   
+   };   
+
   </script>
+
 </html>
